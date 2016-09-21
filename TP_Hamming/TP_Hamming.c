@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <math.h>
 
-void decode(int * x){
+void decode(int *msgEnc, int* msgDec){
 
 int j;
-
-printf("Message décodé : ");
+printf("Message decode : ");
 
 for(j = 0; j < 4; j++)
 	{
-	printf("%d ", x[j]);
+    msgDec[j]=msgEnc[j];
 	}
-printf("\n");
 
 }
 
-void encode(int message[], int *x){
+void encode(int* msg, int *result){
 	int matrixG[4][7] = {
 		{1, 0, 0, 0, 0, 1, 1},
 		{0, 1, 0, 0, 1, 0, 1},
@@ -24,57 +24,99 @@ void encode(int message[], int *x){
 	};
 	int k;
 	for (k=0; k<7; k++){
-		x[k] = 0;
+		result[k] = 0;
 	}
 	int i, j;
 	for (j = 0; j < 7; ++j)
 	{
 		for (i = 0; i < 4; ++i)
 		{
-			x[j] += message[i] * matrixG[i][j];
+			result[j] += msg[i] * matrixG[i][j];
 		}
-		x[j] = x[j] % 2;
+		result[j] = result[j] % 2;
 	}
-	printf("Message encodé : ");
+	printf("Message encode : ");
 	for(j = 0; j < 7; j++)
 		{
-		printf("%d ", x[j]);
+		printf("%d ", result[j]);
 		}
 	printf("\n");
 }
 
-void correct(int *x){
+void correct(int *msgEncErr, int* msgEncCor){
 	int matrixH[3][7] = {
 		{0, 0, 0, 1, 1, 1, 1},
 		{0, 1, 1, 0, 0, 1, 1},
 		{1, 0, 1, 0, 1, 0, 1}
 	};
 	int j, k;
-	int w[3]={0,0,0};
+	int result[3]={0,0,0};
     int c[]={1,1,1,1,0,0,1};
 
     for(j=0; j<3; j++){
         for(k=0; k < 7; k++){
-                w[j] += matrixH[j][k] * c[k];
+                result[j] += matrixH[j][k] * msgEncErr[k];
 		}
 	}
 	for(j = 0; j < 3; j++)
 		{
-        w[j]=w[j] % 2;
-		printf("%d  ", w[j]);
+        result[j]=result[j] % 2;
+		printf("test : %d ", result[j]);
 		}
+    int pos=0;
+    int l=3;
+    for (l=3; l>0; l--){
+        pos = pos +(result[l-1]*pow(2,l-1));
+    }
+    printf("\n position :%d",pos);
+    printf("\n");
+    int i;
+    if (pos != 0){
 
+        for (i=0;i>7;i++){
+            if (i==pos-1){
+              msgEncCor[i]=msgEncErr[i]+1 %2;
+            } else{
+                msgEncCor[i]=msgEncErr[i];
+            }
+        }
+    }else{
+        for (i=0;i>7;i++){
+            msgEncCor[i]=msgEncErr[i];
+        }
+    }
+}
 
+void generateMsg(int* msg){
+    srand(time(NULL));
+    int i;
+    for (i=0; i<4; i++){
+        *(msg+i) = rand() %2;
+        printf("%d\n", *(msg+i));
+    }
 }
 
 int main(){
 
-int* x= malloc(7*sizeof(int));
-int message[4]={1,1,0,1};
-encode(message, x);
+int* c= malloc(7*sizeof(int));
+int* m=malloc(4*sizeof(int));
+int* m_prime=malloc(4*sizeof(int));
+int* c_prime=malloc(7*sizeof(int));
+/*encode(message, x);
 decode(x);
 correct(x);
-
-
+*/
+/*int i;
+for (i=0; i<4; i++){
+    printf("%d\n", *(rdmMsg+i));
+}*/
+generateMsg(m);
+encode(m,c);
+correct(c,c_prime);
+decode(c_prime,m_prime);
+int i;
+for (i=0; i<4; i++){
+    printf("%d\n", *(m_prime+i));
 }
 
+}
