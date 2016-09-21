@@ -51,46 +51,19 @@ void correct(int *x){
 	};
 	int j, k;
 	int w[3]={0,0,0};
-
-
-
-
-    int xx[]={1,1,1,1,0,0,1};
-	//printf("%d", xx[0][j]);
+    int c[]={1,1,1,1,0,0,1};
 
     for(j=0; j<3; j++){
         for(k=0; k < 7; k++){
-                w[j] += matrixH[j][k] * xx[k];
-                printf("j=%d k=%d \n",j,k);
-                printf("H=%d xx=%d \n", matrixH[j][k],xx[k]);
-                printf("w=%d\n",w[j]);
-                printf("-----\n");
-
+                w[j] += matrixH[j][k] * c[k];
 		}
 	}
-	printf("result:");
 	for(j = 0; j < 3; j++)
 		{
         w[j]=w[j] % 2;
 		printf("%d  ", w[j]);
 		}
-	/*for(k=0; k < 7; k++){
-		for(j=0; j<3; j++){
-        printf("k et j %d %d",k,j);
-        printf("etape %d %d \n", matrixH[k][j],xx[0][k]);
-		w[k] += matrixH[j][k] * xx[0][k];
-		printf("Calcul %d \n",w[k]);
-		}
-		//w[k] = w[k] % 2;
-	}
-	printf("Test : ");
 
-	for(j = 0; j < 3; j++)
-		{
-		printf("%d ", w[j]);
-		}
-
-	printf("\n");*/
 
 }
 
