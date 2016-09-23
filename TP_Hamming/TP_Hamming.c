@@ -43,7 +43,7 @@ void encode(int* msg, int *result){
 	printf("\n");
 }
 
-void correct(int *msgEncErr, int* msgEncCor){
+void correct(int *msgEncErr){
 	int matrixH[3][7] = {
 		{0, 0, 0, 1, 1, 1, 1},
 		{0, 1, 1, 0, 0, 1, 1},
@@ -58,37 +58,32 @@ void correct(int *msgEncErr, int* msgEncCor){
                 result[j] += matrixH[j][k] * msgEncErr[k];
 		}
 	}
+	printf("\ncorrect result :\n");
 	for(j = 0; j < 3; j++)
 		{
         result[j]=result[j] % 2;
-		printf("test : %d ", result[j]);
+        printf("%d",result[j]);
+		//printf("%d ", result[j]);
 		}
     int pos=0;
     int l=3;
     for (l=3; l>0; l--){
         pos = pos +(result[l-1]*pow(2,l-1));
     }
-    printf("\n position :%d",pos);
-    printf("\n");
+    printf("\nposition :%d\n",pos);
     int i;
     if (pos != 0){
-
-        for (i=0;i>7;i++){
+        for (i=0;i<7;i++){
             if (i==pos-1){
-              msgEncCor[i]=msgEncErr[i]+1 %2;
-            } else{
-                msgEncCor[i]=msgEncErr[i];
+                printf("correction at %d",i);
+                msgEncErr[i]=(msgEncErr[i]+1) %2;
+                //printf("correction : %d", )
             }
-        }
-    }else{
-        for (i=0;i>7;i++){
-            msgEncCor[i]=msgEncErr[i];
         }
     }
 }
 
 void generateMsg(int* msg){
-    srand(time(NULL));
     int i;
     for (i=0; i<4; i++){
         *(msg+i) = rand() %2;
@@ -96,12 +91,35 @@ void generateMsg(int* msg){
     }
 }
 
+void noise (float p, int* clrMsg, int* altMsg){
+    int i;
+    float r = (float)rand()/(float)RAND_MAX;
+    if (r<p){
+        int change= rand()%7;
+        for (i=0;i<7;i++){
+            if (i==change){
+                altMsg[i]=(clrMsg[i]+1) %2;
+            } else {
+                altMsg[i]=clrMsg[i];
+            }
+        }
+
+    } else {
+        for (i=0;i<7;i++){
+                altMsg[i]=clrMsg[i];
+            }
+    }
+
+}
+
 int main(){
 
+srand(time(NULL));
 int* c= malloc(7*sizeof(int));
 int* m=malloc(4*sizeof(int));
 int* m_prime=malloc(4*sizeof(int));
 int* c_prime=malloc(7*sizeof(int));
+int* c_second=malloc(7*sizeof(int));
 /*encode(message, x);
 decode(x);
 correct(x);
@@ -112,11 +130,22 @@ for (i=0; i<4; i++){
 }*/
 generateMsg(m);
 encode(m,c);
-correct(c,c_prime);
-decode(c_prime,m_prime);
 int i;
-for (i=0; i<4; i++){
-    printf("%d\n", *(m_prime+i));
-}
+printf("c\n");
+for (i=0; i<7; i++){
+    printf("%d", *(c+i));}
+noise(0.5,c,c_prime);
+printf("\nc prime\n");
+for (i=0; i<7; i++){
+    printf("%d", *(c_prime+i));}
+correct(c_prime);
+printf("\nc prime corrected\n");
+for (i=0; i<7; i++){
+    printf("%d", *(c_prime+i));}
+//decode(c_prime,m_prime);
+//int i;
+//for (i=0; i<4; i++){
+//    printf("%d\n", *(m_prime+i));
+//}
 
 }
